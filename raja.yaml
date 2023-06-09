@@ -1,0 +1,121 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creating a forst EC2 Instance with CloudFormation
+
+Resources:
+  RajaEC2Instance1:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-024fc608af8f886bc
+      InstanceType: t2.micro
+      KeyName: raja
+      AvailabilityZone: us-east-1a
+
+  RajaEC2Instance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-024fc608af8f886bc
+      InstanceType: t2.micro
+      KeyName: raja
+      AvailabilityZone: us-east-1a
+  
+  RajaEBSVolume1:
+    Type: AWS::EC2::Volume
+    Properties:   
+      AvailabilityZone: us-east-1a
+      Size: 7
+  
+  RajaEBSVolume2:
+    Type: AWS::EC2::Volume
+    Properties:   
+      AvailabilityZone: us-east-1a
+      Size: 7
+  
+  EC2VolumeAttachment01:
+    Type: AWS::EC2::VolumeAttachment
+    Properties: 
+      Device: /dev/sdh
+      InstanceId: !Ref RajaEC2Instance1
+      VolumeId: !Ref RajaEBSVolume1
+
+  EC2VolumeAttachment02:
+    Type: AWS::EC2::VolumeAttachment
+    Properties: 
+      Device: /dev/sdh
+      InstanceId: !Ref RajaEC2Instance2
+      VolumeId: !Ref RajaEBSVolume2
+
+  RajaS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties: 
+      BucketName: raja-devxpace-s3bucket
+  RajaS3Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: raja-s3-access-policy
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - s3.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Description: Role to provide access to S3
+      Policies:
+        - PolicyName: raja-read-write-s3-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                - s3:GetBucketLocation
+                - s3:ListAllMyBuckets
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                - s3:ListBucket
+                Resource:
+                - arn:aws:s3:::test
+              - Effect: Allow
+                Action:
+                - s3:PutObject
+                - s3:GetObject
+                - s3:DeleteObject
+                Resource:
+                - !Sub arn:aws:s3:::${RajaS3Bucket}
+                - !Sub arn:aws:s3:::${RajaS3Bucket}/*    
+
+  RajaLoadBalancer:  
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties: 
+      Name: RajaLoadBalancer
+      Scheme: internet-facing
+      Type: network
+      Subnets:
+        - subnet-0167cb8ef89a70f1b
+
+  RajaTargetGroup:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      Name: RajaTargetGroup
+      Port: 80
+      Protocol: TCP
+      VpcId: vpc-0f849f58fc922f7f2
+      Targets:
+        - Id: !Ref RajaEC2Instance1
+          Port: 80
+        - Id: !Ref RajaEC2Instance2
+          Port: 80
+     
+  RajaListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref RajaTargetGroup
+      LoadBalancerArn: !Ref RajaLoadBalancer
+      Port: 80
+      Protocol: TCP   
+
+ 
