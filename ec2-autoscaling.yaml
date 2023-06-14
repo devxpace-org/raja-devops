@@ -1,1 +1,57 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creating a first Autoscaling Group with CloudFormation
 
+Resources:
+  RajaLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties: 
+      LaunchTemplateName: RajaLaunchTemplate
+      LaunchTemplateData:
+        ImageId: ami-09988af04120b3591
+        InstanceType: t2.micro
+        KeyName: raja
+      
+  RajaLoadBalancer:  
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties: 
+      Name: RajaLoadBalancer
+      Scheme: internet-facing
+      Type: network
+      Subnets:
+        - subnet-0167cb8ef89a70f1b
+
+  RajaTargetGroup:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      Name: RajaTargetGroup
+      Port: 80
+      Protocol: TCP
+      VpcId: vpc-0f849f58fc922f7f2
+
+  RajaListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref RajaTargetGroup
+      LoadBalancerArn: !Ref RajaLoadBalancer
+      Port: 80
+      Protocol: TCP       
+
+  RajaAutoscalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: RajaAutoscalingGroup
+      AvailabilityZones: 
+        - us-east-1a
+      LaunchTemplate:
+        LaunchTemplateId: !Ref RajaLaunchTemplate
+        Version: !GetAtt RajaLaunchTemplate.LatestVersionNumber
+      TargetGroupARNs: 
+        - !Ref RajaTargetGroup
+      MinSize: 1 
+      MaxSize: 5 
+      DesiredCapacity: 2
+      
+ 
+              
