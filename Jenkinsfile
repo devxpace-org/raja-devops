@@ -10,7 +10,7 @@ pipeline {
 
                
                 sh 'docker pull rajachigurupati/helloworld:1.0' 
-		sh 'docker run -d -p 5000:3000 --name helloworld rajachigurupati/helloworld:1.0'
+		sh 'docker run -d -p 3000:3000 --name helloworld rajachigurupati/helloworld:1.0'
         }      
         }
         
