@@ -1,9 +1,9 @@
 FROM node:20-alpine
 
-COPY package.json /app/rajaimage1/
-COPY src /app/rajaimage1/
+COPY package.json /app/helloworld/
+COPY src /app/helloworld/
 
-WORKDIR /app/rajaimage1/
+WORKDIR /app/helloworld/
 
 RUN npm install
 
