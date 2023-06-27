@@ -1,9 +1,9 @@
 FROM node:20-alpine
 
-COPY package.json /app/nicejob/
-COPY src /app/nicejob/
+COPY package.json /app/helloworld/
+COPY src /app/helloworld/
 
-WORKDIR /app/nicejob/
+WORKDIR /app/helloworld/
 
 RUN npm install
 
