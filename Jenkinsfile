@@ -5,14 +5,12 @@ pipeline {
 	}
 
     stages {
-        stage('Build and Deploy') {
+        stage('pull and run') {
             steps {
 
-                
-                sh 'sudo docker build -t rajachigurupati/nicejob:1.0 .'
-                sh 'sudo chmod 666 /var/run/docker.sock'
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh 'docker push rajachigurupati/nicejob:1.0'
+               
+                sh 'docker pull rajachigurupati/nicejob:1.0'
+		sh 'docker run rajachigurupari/nicejob:1.0'    
         }      
         }
         
