@@ -9,10 +9,10 @@ pipeline {
             steps {
 
                
-		sh 'sudo docker build -t rajachigurupati/rksimha:tejaswni .'
+		sh 'sudo docker build -t rajachigurupati/rksimha:supriya .'
                 sh 'sudo chmod 666 /var/run/docker.sock'
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh 'docker push rajachigurupati/rksimha:tejaswni'
+                sh 'docker push rajachigurupati/rksimha:supriya'
         }      
         }
         
