@@ -9,8 +9,10 @@ pipeline {
             steps {
 
                
-                sh 'docker pull rajachigurupati/helloworld:1.0' 
-		sh 'docker run -d -p 3000:3000 --name helloworld rajachigurupati/helloworld:1.0'
+		sh 'sudo docker build -t rajachigurupati/rksimha:1.0 .'
+                sh 'sudo chmod 666 /var/run/docker.sock'
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh 'docker push rajachigurupati/rksimha:1.0'
         }      
         }
         
